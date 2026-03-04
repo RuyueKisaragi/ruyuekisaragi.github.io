@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>如月 | Portfolio</title>
+    <title>Ruyue | Portfolio</title>
     <style>
         /* --- 全局與 CSS 變數 --- */
         :root {
@@ -277,10 +277,10 @@
         </div>
 
         <div class="lang-container" id="langContainer">
-            <div class="lang-selected" id="currentLangDisplay">TW</div>
+            <div class="lang-selected" id="currentLangDisplay">EN</div>
             <div class="lang-dropdown">
-                <div class="lang-option" onclick="changeLang(event, 'TW')">繁體中文 (TW)</div>
                 <div class="lang-option" onclick="changeLang(event, 'EN')">English (EN)</div>
+                <div class="lang-option" onclick="changeLang(event, 'TW')">繁體中文 (TW)</div>
             </div>
         </div>
     </div>
@@ -288,10 +288,10 @@
     <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleMenu()"></div>
     
     <div class="sidebar" id="sidebar">
-        <a href="#home" class="nav-link" id="navHome">首頁</a>
-        <a href="#about" class="nav-link" id="navAbout">關於我</a>
-        <a href="#fursona" class="nav-link" id="navFursona">獸設定介紹</a>
-        <a href="#album" class="nav-link" id="navAlbum">相簿</a>
+        <a href="#home" class="nav-link" id="navHome">HOME</a>
+        <a href="#about" class="nav-link" id="navAbout">ABOUT ME</a>
+        <a href="#fursona" class="nav-link" id="navFursona">FURSONA</a>
+        <a href="#album" class="nav-link" id="navAlbum">ALBUM</a>
     </div>
 
     <div class="back-to-top" id="backToTop" onclick="scrollToTop()"></div>
@@ -299,58 +299,58 @@
     <section id="home">
         <h1 class="reveal">HI, I'M<br>RUYUE</h1>
         <div class="home-subtitle reveal" id="homeSubtitle" style="transition-delay: 0.1s;">Welcome to my website</div>
-        <button class="contact-btn reveal" id="ctaBtn" onclick="openModal()" style="transition-delay: 0.2s;">與我聯繫</button>
+        <button class="contact-btn reveal" id="ctaBtn" onclick="openModal()" style="transition-delay: 0.2s;">CONTACT ME</button>
     </section>
 
     <section id="about">
-        <h2 class="section-title reveal" id="titleAbout">關於我</h2>
+        <h2 class="section-title reveal" id="titleAbout">ABOUT ME</h2>
         <div class="about-card reveal" style="transition-delay: 0.1s;">
             <div class="profile-img">
                 <div class="inner"><img src="" alt="Profile Image"></div>
             </div>
             <div class="info-content">
-                <div class="info-name" id="infoName">尚未填寫</div>
+                <div class="info-name" id="infoName">Blank</div>
                 <div class="info-tagline" id="infoTagline">Subtitle Here</div>
                 
                 <div class="intro-text" id="infoIntro">
-                    介紹文字保留區塊... 這裡可以放上你的一段自我介紹。
+                    Intro placeholder... You can put your self-introduction here.
                 </div>
 
                 <div class="info-grid">
-                    <div class="info-item"><div class="info-label" id="label1">標題 1</div><div class="info-value" id="val1">內容...</div></div>
-                    <div class="info-item"><div class="info-label" id="label2">標題 2</div><div class="info-value" id="val2">內容...</div></div>
-                    <div class="info-item"><div class="info-label" id="label3">標題 3</div><div class="info-value" id="val3">內容...</div></div>
-                    <div class="info-item"><div class="info-label" id="label4">標題 4</div><div class="info-value" id="val4">內容...</div></div>
+                    <div class="info-item"><div class="info-label" id="label1">Title 1</div><div class="info-value" id="val1">Content...</div></div>
+                    <div class="info-item"><div class="info-label" id="label2">Title 2</div><div class="info-value" id="val2">Content...</div></div>
+                    <div class="info-item"><div class="info-label" id="label3">Title 3</div><div class="info-value" id="val3">Content...</div></div>
+                    <div class="info-item"><div class="info-label" id="label4">Title 4</div><div class="info-value" id="val4">Content...</div></div>
                 </div>
             </div>
         </div>
     </section>
 
     <section id="fursona">
-        <h2 class="section-title reveal" id="titleFursona">獸設定介紹</h2>
+        <h2 class="section-title reveal" id="titleFursona">FURSONA</h2>
         <div class="content-area">
             
             <div class="fursona-card reveal">
                 <div class="fursona-img-placeholder">Image</div>
                 <div class="fursona-info">
-                    <h3 id="fName1">設定名稱 1</h3>
+                    <h3 id="fName1">Fursona 1</h3>
                     <div class="fursona-meta">
-                        <span class="fursona-meta-tag" id="fDes1">設計：尚未填寫</span>
-                        <span class="fursona-meta-tag" id="fMak1">工作室：尚未填寫</span>
+                        <span class="fursona-meta-tag" id="fDes1">Design: Blank</span>
+                        <span class="fursona-meta-tag" id="fMak1">Maker: Blank</span>
                     </div>
-                    <div class="fursona-story" id="fStory1">設定介紹文字保留區塊...</div>
+                    <div class="fursona-story" id="fStory1">Story placeholder...</div>
                 </div>
             </div>
 
             <div class="fursona-card reveal" style="transition-delay: 0.1s;">
                 <div class="fursona-img-placeholder">Image</div>
                 <div class="fursona-info">
-                    <h3 id="fName2">設定名稱 2</h3>
+                    <h3 id="fName2">Fursona 2</h3>
                     <div class="fursona-meta">
-                        <span class="fursona-meta-tag" id="fDes2">設計：尚未填寫</span>
-                        <span class="fursona-meta-tag" id="fMak2">工作室：尚未填寫</span>
+                        <span class="fursona-meta-tag" id="fDes2">Design: Blank</span>
+                        <span class="fursona-meta-tag" id="fMak2">Maker: Blank</span>
                     </div>
-                    <div class="fursona-story" id="fStory2">設定介紹文字保留區塊...</div>
+                    <div class="fursona-story" id="fStory2">Story placeholder...</div>
                 </div>
             </div>
 
@@ -358,17 +358,17 @@
     </section>
 
     <section id="album">
-        <h2 class="section-title reveal" id="titleAlbum">相簿</h2>
+        <h2 class="section-title reveal" id="titleAlbum">ALBUM</h2>
         <div class="content-area reveal">
-            <div class="empty-placeholder" id="albumContent">照片保留區塊...</div>
+            <div class="empty-placeholder" id="albumContent">Album placeholders...</div>
         </div>
     </section>
 
-    <footer>© 2026 RUYUE PORTFOLIO | DESIGNED BY RUYUE</footer>
+    <footer>© 2026 RUYUE PORTFOLIO | DESIGNED BY LACOONEN</footer>
 
     <div class="modal-overlay" id="socialModal">
         <div class="modal-content">
-            <h2 style="margin-top:0; margin-bottom:32px; font-size:20px; font-weight: 800; letter-spacing: 2px;" id="modalTitle">聯絡方式</h2>
+            <h2 style="margin-top:0; margin-bottom:32px; font-size:20px; font-weight: 800; letter-spacing: 2px;" id="modalTitle">CONTACTS</h2>
             <div style="display: flex; flex-direction: column; gap: 0px;">
                 <a href="https://www.facebook.com/Repeach494" class="social-link" target="_blank">Facebook</a>
                 <a href="https://x.com/RuyueKisargi" class="social-link" target="_blank">X</a>

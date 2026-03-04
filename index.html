@@ -121,7 +121,7 @@
         }
 
         /* --- 首頁 --- */
-        #home h1 { font-size: clamp(50px, 12vw, 150px); line-height: 1; margin-bottom: 20px; font-weight: 900; letter-spacing: -2px; }
+        #home h1 { font-size: clamp(50px, 12vw, 120px); line-height: 1; margin-bottom: 24px; font-weight: 900; letter-spacing: -2px; }
         .home-subtitle { font-size: clamp(14px, 4vw, 18px); font-weight: 500; color: var(--text-muted); letter-spacing: 6px; margin-bottom: 60px; text-transform: uppercase; }
 
         /* --- 聯絡按鈕 --- */
@@ -161,7 +161,7 @@
             box-shadow: 0 0 40px rgba(59, 130, 246, 0.3);
         }
         .profile-img .inner { width: 100%; height: 100%; border-radius: 50%; background: var(--bg-color); overflow: hidden; display: flex; align-items: center; justify-content: center; }
-        .profile-img img { width: 100%; height: 100%; object-fit: cover; opacity: 0.5; /* 圖片留白時稍微變暗 */ }
+        .profile-img img { width: 100%; height: 100%; object-fit: cover; opacity: 0.5; }
 
         .info-content { flex-grow: 1; width: 100%; }
         .info-name { font-size: 36px; font-weight: 800; margin-bottom: 8px; color: var(--text-main); }
@@ -204,7 +204,7 @@
             overflow: hidden; position: relative;
         }
         @media (max-width: 850px) { .fursona-img-placeholder { width: 100%; max-width: 300px; } }
-        .fursona-img-placeholder img { width: 100%; height: 100%; object-fit: cover; opacity: 0; /* 留白暫不顯示圖片 */ }
+        .fursona-img-placeholder img { width: 100%; height: 100%; object-fit: cover; opacity: 0; }
 
         .fursona-info { flex-grow: 1; }
         .fursona-info h3 { margin: 0 0 16px 0; color: var(--text-main); font-size: 28px; font-weight: 800; letter-spacing: 1px;}
@@ -297,8 +297,8 @@
     <div class="back-to-top" id="backToTop" onclick="scrollToTop()"></div>
 
     <section id="home">
-        <h1 class="reveal">RUYUE</h1>
-        <div class="home-subtitle reveal" id="homeSubtitle" style="transition-delay: 0.1s;">Welcome to my website!</div>
+        <h1 class="reveal">HI, I'M<br>RUYUE</h1>
+        <div class="home-subtitle reveal" id="homeSubtitle" style="transition-delay: 0.1s;">Welcome to my website</div>
         <button class="contact-btn reveal" id="ctaBtn" onclick="openModal()" style="transition-delay: 0.2s;">與我聯繫</button>
     </section>
 
@@ -428,11 +428,11 @@
             if (window.pageYOffset > 500) btn.classList.add('show'); else btn.classList.remove('show'); 
         });
 
-        // 多語系切換設定 (配合留白處理)
+        // 多語系切換設定
         const translations = {
             TW: { 
                 label: "TW", 
-                homeSubtitle: "Welcome to my website!",
+                homeSubtitle: "Welcome to my website",
                 home: "首頁", about: "關於我", fursona: "獸設定介紹", album: "相簿", cta: "與我聯繫", modal: "聯絡方式", albumContent: "照片保留區塊...",
                 name: "尚未填寫", tagline: "Subtitle Here", 
                 infoIntro: "介紹文字保留區塊... 這裡可以放上你的一段自我介紹。",
@@ -442,7 +442,7 @@
             },
             EN: { 
                 label: "EN", 
-                homeSubtitle: "Welcome to my website!",
+                homeSubtitle: "Welcome to my website",
                 home: "HOME", about: "ABOUT ME", fursona: "FURSONA", album: "ALBUM", cta: "CONTACT ME", modal: "CONTACTS", albumContent: "Album placeholders...",
                 name: "Blank", tagline: "Subtitle Here", 
                 infoIntro: "Intro placeholder... You can put your self-introduction here.",

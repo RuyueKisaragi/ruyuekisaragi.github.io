@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>如月 | Portfolio</title>
+    <style>
+        /* --- 全局與 CSS 變數 --- */
+        :root {
+            --bg-color: #030712;
+            --primary-blue: #3b82f6;
+            --secondary-cyan: #06b6d4;
+            --gradient-blue: linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%);
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
+        html { scroll-behavior: smooth; }
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang TC", "Microsoft JhengHei", sans-serif;
+            margin: 0; padding: 0;
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* --- 背景裝飾光暈 --- */
+        .bg-glow {
+            position: fixed; top: -20%; left: -10%; width: 50vw; height: 50vw;
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, transparent 70%);
+            z-index: -1; pointer-events: none; filter: blur(60px);
+        }
+        .bg-glow.right { top: 40%; left: auto; right: -20%; background: radial-gradient(circle, rgba(6, 182, 212, 0.1) 0%, transparent 70%); }
+
+        /* --- 頂部導覽列與按鈕 --- */
+        .header-controls {
+            position: fixed; top: 0; left: 0; width: 100%; padding: 24px;
+            display: flex; justify-content: space-between; align-items: flex-start;
+            z-index: 9999; box-sizing: border-box; pointer-events: none;
+        }
+        .header-controls > * { pointer-events: auto; }
+
+        .menu-btn {
+            cursor: pointer; display: flex; flex-direction: column; 
+            justify-content: center; align-items: center; gap: 6px;
+            width: 48px; height: 48px;
+            background: var(--glass-bg); border: 1px solid var(--glass-border);
+            border-radius: 14px; backdrop-filter: blur(20px);
+            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .menu-btn:hover { transform: scale(1.05); background: rgba(255, 255, 255, 0.08); }
+        .menu-btn div { width: 20px; height: 2px; background-color: var(--text-main); transition: 0.4s; border-radius: 2px; pointer-events: none; }
+        .menu-btn.active div:nth-child(1) { transform: translateY(8px) rotate(45deg); background-color: var(--secondary-cyan); }
+        .menu-btn.active div:nth-child(2) { opacity: 0; transform: scaleX(0); }
+        .menu-btn.active div:nth-child(3) { transform: translateY(-8px) rotate(-45deg); background-color: var(--secondary-cyan); }
+
+        /* --- 語言選單 --- */
+        .lang-container { position: relative; user-select: none; }
+        .lang-selected {
+            background: var(--glass-bg); border: 1px solid var(--glass-border);
+            color: var(--text-main); padding: 12px 24px; border-radius: 14px; cursor: pointer;
+            backdrop-filter: blur(20px); transition: 0.3s; font-size: 13px; font-weight: 600; letter-spacing: 1px;
+        }
+        .lang-selected:hover { background: rgba(255, 255, 255, 0.08); }
+        .lang-dropdown {
+            position: absolute; top: 60px; right: 0;
+            background: rgba(10, 15, 30, 0.95); 
+            border: 1px solid var(--glass-border); 
+            border-radius: 16px; width: 150px; opacity: 0; transform: translateY(-15px) scale(0.95); 
+            pointer-events: none; transition: 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.8); overflow: hidden;
+        }
+        .lang-container.active .lang-dropdown { opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; }
+        .lang-option { padding: 14px 20px; font-size: 13px; color: var(--text-muted); cursor: pointer; transition: 0.3s; }
+        .lang-option:hover { background: rgba(59, 130, 246, 0.1); color: var(--primary-blue); padding-left: 24px; }
+
+        /* --- 側邊導覽選單 --- */
+        .sidebar { 
+            position: fixed; top: 0; left: -320px; width: 320px; height: 100%; 
+            background: rgba(3, 7, 18, 0.7); backdrop-filter: blur(40px); 
+            border-right: 1px solid var(--glass-border);
+            z-index: 1000; display: flex; flex-direction: column; justify-content: center;
+            transition: 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+        .sidebar.active { left: 0; }
+        .sidebar-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(5px); z-index: 999; opacity: 0; pointer-events: none; transition: 0.5s; }
+        .sidebar-overlay.active { opacity: 1; pointer-events: auto; }
+        
+        .nav-link { 
+            color: var(--text-muted); text-decoration: none; font-size: 16px; 
+            font-weight: 500; letter-spacing: 3px; padding: 24px 50px; 
+            transition: 0.4s ease; position: relative; display: block;
+            text-transform: uppercase;
+        }
+        .nav-link:hover { color: var(--text-main); padding-left: 70px; background: linear-gradient(90deg, rgba(59,130,246,0.1) 0%, transparent 100%); }
+        .nav-link::before {
+            content: ''; position: absolute; left: 40px; top: 50%; width: 0; height: 2px;
+            background: var(--gradient-blue); transition: 0.4s ease; transform: translateY(-50%);
+        }
+        .nav-link:hover::before { width: 20px; }
+
+        /* --- 區塊佈局 --- */
+        section { 
+            min-height: 100vh; display: flex; flex-direction: column; 
+            justify-content: center; align-items: center; text-align: center; 
+            padding: 100px 20px; box-sizing: border-box; position: relative;
+        }
+        
+        /* --- 滾動浮現動畫 --- */
+        .reveal { opacity: 0; transform: translateY(40px) scale(0.98); filter: blur(10px); transition: 1s cubic-bezier(0.25, 1, 0.5, 1); }
+        .reveal.active { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+        
+        .section-title { 
+            font-size: clamp(32px, 6vw, 60px); font-weight: 900; 
+            letter-spacing: 2px; margin-bottom: 50px; 
+            background: var(--gradient-blue); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+
+        /* --- 首頁 --- */
+        #home h1 { font-size: clamp(50px, 12vw, 150px); line-height: 1; margin-bottom: 20px; font-weight: 900; letter-spacing: -2px; }
+        .home-subtitle { font-size: clamp(14px, 4vw, 18px); font-weight: 500; color: var(--text-muted); letter-spacing: 6px; margin-bottom: 60px; text-transform: uppercase; }
+
+        /* --- 聯絡按鈕 --- */
+        .contact-btn {
+            appearance: none; border: none; cursor: pointer; color: #fff;
+            font-size: 13px; font-weight: 600; letter-spacing: 3px;
+            padding: 20px 60px; border-radius: 50px;
+            background: var(--gradient-blue);
+            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3); 
+            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative; overflow: hidden;
+        }
+        .contact-btn::after {
+            content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: 0.5s;
+        }
+        .contact-btn:hover { transform: translateY(-5px) scale(1.02); box-shadow: 0 15px 40px rgba(6, 182, 212, 0.4); }
+        .contact-btn:hover::after { left: 100%; }
+
+        /* --- 關於我卡片 --- */
+        .about-card {
+            width: 100%; max-width: 1000px;
+            background: var(--glass-bg); border: 1px solid var(--glass-border);
+            border-radius: 32px; padding: 60px;
+            display: flex; gap: 60px; align-items: center; text-align: left;
+            backdrop-filter: blur(20px); box-shadow: 0 30px 60px rgba(0,0,0,0.4);
+            box-sizing: border-box; margin: 0 auto;
+        }
+        @media (max-width: 850px) {
+            .about-card { flex-direction: column; text-align: center; padding: 40px 24px; gap: 40px;}
+        }
+
+        .profile-img { 
+            width: 200px; height: 200px; border-radius: 50%; 
+            background: var(--gradient-blue); padding: 4px; flex-shrink: 0; 
+            box-shadow: 0 0 40px rgba(59, 130, 246, 0.3);
+        }
+        .profile-img .inner { width: 100%; height: 100%; border-radius: 50%; background: var(--bg-color); overflow: hidden; display: flex; align-items: center; justify-content: center; }
+        .profile-img img { width: 100%; height: 100%; object-fit: cover; opacity: 0.5; /* 圖片留白時稍微變暗 */ }
+
+        .info-content { flex-grow: 1; width: 100%; }
+        .info-name { font-size: 36px; font-weight: 800; margin-bottom: 8px; color: var(--text-main); }
+        .info-tagline { color: var(--secondary-cyan); font-weight: 500; letter-spacing: 3px; margin-bottom: 30px; font-size: 14px; text-transform: uppercase;}
+        
+        .intro-text {
+            font-size: 16px; color: var(--text-muted); line-height: 1.8; margin-bottom: 40px; 
+            text-align: justify;
+        }
+        @media (max-width: 850px) { .intro-text { text-align: center; } }
+
+        .info-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; width: 100%; }
+        @media (max-width: 600px) { .info-grid { grid-template-columns: 1fr; } }
+        .info-item {
+            background: rgba(255,255,255,0.02); border: 1px solid var(--glass-border);
+            padding: 20px; border-radius: 20px; transition: 0.3s;
+            display: flex; flex-direction: column; justify-content: center;
+        }
+        .info-item:hover { background: rgba(59, 130, 246, 0.05); border-color: rgba(59, 130, 246, 0.3); transform: translateY(-3px); }
+        .info-label { font-size: 12px; color: var(--secondary-cyan); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 8px; font-weight: 600;}
+        .info-value { font-size: 15px; color: var(--text-main); font-weight: 400; line-height: 1.5; }
+
+        /* --- 內容外框與獸設定卡片 --- */
+        .content-area { width: 100%; max-width: 1000px; padding: 0 20px; box-sizing: border-box; }
+        
+        .fursona-card {
+            background: var(--glass-bg); border: 1px solid var(--glass-border);
+            border-radius: 32px; padding: 40px; margin-bottom: 40px;
+            display: flex; gap: 40px; text-align: left; align-items: center;
+            backdrop-filter: blur(20px); transition: 0.4s ease;
+        }
+        .fursona-card:last-child { margin-bottom: 0; }
+        .fursona-card:hover { transform: translateY(-5px); box-shadow: 0 20px 50px rgba(0,0,0,0.5); border-color: rgba(59, 130, 246, 0.3); }
+        @media (max-width: 850px) { .fursona-card { flex-direction: column; padding: 30px 20px; text-align: center; gap: 24px;} }
+
+        .fursona-img-placeholder {
+            width: 300px; aspect-ratio: 1 / 1; border-radius: 24px; flex-shrink: 0;
+            background: rgba(255, 255, 255, 0.02); border: 1px dashed var(--glass-border);
+            display: flex; align-items: center; justify-content: center; color: var(--text-muted);
+            overflow: hidden; position: relative;
+        }
+        @media (max-width: 850px) { .fursona-img-placeholder { width: 100%; max-width: 300px; } }
+        .fursona-img-placeholder img { width: 100%; height: 100%; object-fit: cover; opacity: 0; /* 留白暫不顯示圖片 */ }
+
+        .fursona-info { flex-grow: 1; }
+        .fursona-info h3 { margin: 0 0 16px 0; color: var(--text-main); font-size: 28px; font-weight: 800; letter-spacing: 1px;}
+        .fursona-meta { display: flex; gap: 12px; margin-bottom: 24px; flex-wrap: wrap; }
+        @media (max-width: 850px) { .fursona-meta { justify-content: center; } }
+        .fursona-meta-tag { 
+            background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); 
+            padding: 8px 16px; border-radius: 50px; font-size: 13px; color: var(--primary-blue); font-weight: 600; 
+        }
+        .fursona-meta-tag a { color: inherit; text-decoration: none; transition: 0.3s; }
+        .fursona-meta-tag a:hover { color: var(--text-main); text-shadow: 0 0 8px rgba(255,255,255,0.5); }
+        .fursona-story { color: var(--text-muted); font-size: 15px; line-height: 1.8; text-align: justify; }
+        @media (max-width: 850px) { .fursona-story { text-align: center; } }
+
+        /* --- 相簿區塊留白 --- */
+        .empty-placeholder {
+            width: 100%; padding: 100px 20px; border: 1px dashed var(--glass-border);
+            border-radius: 32px; color: var(--text-muted); font-size: 14px; letter-spacing: 2px;
+            background: rgba(255, 255, 255, 0.01);
+        }
+
+        /* --- 彈出視窗 (Modal) --- */
+        .modal-overlay { 
+            position: fixed; inset: 0; background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(20px); 
+            display: flex; justify-content: center; align-items: center; z-index: 9999; 
+            opacity: 0; pointer-events: none; transition: 0.4s ease; padding: 24px; 
+        }
+        .modal-overlay.active { opacity: 1; pointer-events: auto; }
+        .modal-content { 
+            background: rgba(10, 15, 30, 0.95); border: 1px solid var(--glass-border); border-radius: 32px; 
+            padding: 50px 30px; width: 100%; max-width: 400px; box-sizing: border-box; text-align: center;
+            transform: translateY(30px) scale(0.95); transition: 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.6);
+        }
+        .modal-overlay.active .modal-content { transform: translateY(0) scale(1); }
+
+        .social-link { 
+            display: block; width: 100%; padding: 18px; margin-bottom: 16px; 
+            background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 20px; 
+            color: var(--text-main); text-decoration: none; transition: 0.3s; box-sizing: border-box; 
+            font-weight: 500; letter-spacing: 1px; font-size: 14px;
+        }
+        .social-link:hover { 
+            background: rgba(59, 130, 246, 0.1); border-color: rgba(59, 130, 246, 0.4); 
+            transform: translateY(-3px); color: var(--secondary-cyan);
+        }
+        
+        /* --- 返回頂部按鈕 --- */
+        .back-to-top { 
+            position: fixed; bottom: 30px; right: 30px; width: 50px; height: 50px; 
+            background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 50%; 
+            display: flex; justify-content: center; align-items: center; cursor: pointer; 
+            z-index: 998; opacity: 0; visibility: hidden; transition: 0.4s; backdrop-filter: blur(10px); 
+        }
+        .back-to-top:hover { background: rgba(59, 130, 246, 0.2); transform: translateY(-5px); }
+        .back-to-top.show { opacity: 1; visibility: visible; }
+        .back-to-top::after { content: ''; width: 12px; height: 12px; border-left: 2px solid var(--text-main); border-top: 2px solid var(--text-main); transform: rotate(45deg); margin-top: 6px; }
+
+        footer { padding: 60px 20px; text-align: center; color: var(--text-muted); font-size: 12px; letter-spacing: 4px; border-top: 1px solid var(--glass-border); }
+    </style>
+</head>
+<body>
+
+    <div class="bg-glow"></div>
+    <div class="bg-glow right"></div>
+
+    <div class="header-controls">
+        <div class="menu-btn" id="menuBtn" onclick="toggleMenu()">
+            <div></div><div></div><div></div>
+        </div>
+
+        <div class="lang-container" id="langContainer">
+            <div class="lang-selected" id="currentLangDisplay">TW</div>
+            <div class="lang-dropdown">
+                <div class="lang-option" onclick="changeLang(event, 'TW')">繁體中文 (TW)</div>
+                <div class="lang-option" onclick="changeLang(event, 'EN')">English (EN)</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleMenu()"></div>
+    
+    <div class="sidebar" id="sidebar">
+        <a href="#home" class="nav-link" id="navHome">首頁</a>
+        <a href="#about" class="nav-link" id="navAbout">關於我</a>
+        <a href="#fursona" class="nav-link" id="navFursona">獸設定介紹</a>
+        <a href="#album" class="nav-link" id="navAlbum">相簿</a>
+    </div>
+
+    <div class="back-to-top" id="backToTop" onclick="scrollToTop()"></div>
+
+    <section id="home">
+        <h1 class="reveal">RUYUE</h1>
+        <div class="home-subtitle reveal" id="homeSubtitle" style="transition-delay: 0.1s;">Welcome to my website!</div>
+        <button class="contact-btn reveal" id="ctaBtn" onclick="openModal()" style="transition-delay: 0.2s;">與我聯繫</button>
+    </section>
+
+    <section id="about">
+        <h2 class="section-title reveal" id="titleAbout">關於我</h2>
+        <div class="about-card reveal" style="transition-delay: 0.1s;">
+            <div class="profile-img">
+                <div class="inner"><img src="" alt="Profile Image"></div>
+            </div>
+            <div class="info-content">
+                <div class="info-name" id="infoName">尚未填寫</div>
+                <div class="info-tagline" id="infoTagline">Subtitle Here</div>
+                
+                <div class="intro-text" id="infoIntro">
+                    介紹文字保留區塊... 這裡可以放上你的一段自我介紹。
+                </div>
+
+                <div class="info-grid">
+                    <div class="info-item"><div class="info-label" id="label1">標題 1</div><div class="info-value" id="val1">內容...</div></div>
+                    <div class="info-item"><div class="info-label" id="label2">標題 2</div><div class="info-value" id="val2">內容...</div></div>
+                    <div class="info-item"><div class="info-label" id="label3">標題 3</div><div class="info-value" id="val3">內容...</div></div>
+                    <div class="info-item"><div class="info-label" id="label4">標題 4</div><div class="info-value" id="val4">內容...</div></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="fursona">
+        <h2 class="section-title reveal" id="titleFursona">獸設定介紹</h2>
+        <div class="content-area">
+            
+            <div class="fursona-card reveal">
+                <div class="fursona-img-placeholder">Image</div>
+                <div class="fursona-info">
+                    <h3 id="fName1">設定名稱 1</h3>
+                    <div class="fursona-meta">
+                        <span class="fursona-meta-tag" id="fDes1">設計：尚未填寫</span>
+                        <span class="fursona-meta-tag" id="fMak1">工作室：尚未填寫</span>
+                    </div>
+                    <div class="fursona-story" id="fStory1">設定介紹文字保留區塊...</div>
+                </div>
+            </div>
+
+            <div class="fursona-card reveal" style="transition-delay: 0.1s;">
+                <div class="fursona-img-placeholder">Image</div>
+                <div class="fursona-info">
+                    <h3 id="fName2">設定名稱 2</h3>
+                    <div class="fursona-meta">
+                        <span class="fursona-meta-tag" id="fDes2">設計：尚未填寫</span>
+                        <span class="fursona-meta-tag" id="fMak2">工作室：尚未填寫</span>
+                    </div>
+                    <div class="fursona-story" id="fStory2">設定介紹文字保留區塊...</div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <section id="album">
+        <h2 class="section-title reveal" id="titleAlbum">相簿</h2>
+        <div class="content-area reveal">
+            <div class="empty-placeholder" id="albumContent">照片保留區塊...</div>
+        </div>
+    </section>
+
+    <footer>© 2026 RUYUE PORTFOLIO | DESIGNED BY RUYUE</footer>
+
+    <div class="modal-overlay" id="socialModal">
+        <div class="modal-content">
+            <h2 style="margin-top:0; margin-bottom:32px; font-size:20px; font-weight: 800; letter-spacing: 2px;" id="modalTitle">聯絡方式</h2>
+            <div style="display: flex; flex-direction: column; gap: 0px;">
+                <a href="https://www.facebook.com/Repeach494" class="social-link" target="_blank">Facebook</a>
+                <a href="https://x.com/RuyueKisargi" class="social-link" target="_blank">X</a>
+                <a href="https://t.me/Repeach494" class="social-link" target="_blank">Telegram</a>
+                <a href="http://wpa.qq.com/msgrd?v=3&uin=3775974574549&site=qq&menu=yes" class="social-link" target="_blank">QQ</a>
+                <a href="https://www.tiktok.com/@nozomithefox" class="social-link" target="_blank">TikTok</a>
+            </div>
+            <p onclick="closeModal()" style="margin-top:30px; font-size:12px; color:var(--text-muted); cursor:pointer; letter-spacing: 3px; font-weight: 600; transition: 0.3s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='var(--text-muted)'">CLOSE</p>
+        </div>
+    </div>
+
+    <script>
+        // 防止重整後停留在奇怪的位置
+        window.onbeforeunload = function () { window.scrollTo(0, 0); };
+        if (history.scrollRestoration) { history.scrollRestoration = 'manual'; }
+
+        // 選單開關
+        function toggleMenu() { 
+            document.getElementById('langContainer').classList.remove('active');
+            document.getElementById('menuBtn').classList.toggle('active'); 
+            document.getElementById('sidebar').classList.toggle('active'); 
+            document.getElementById('sidebarOverlay').classList.toggle('active'); 
+        }
+
+        // 點擊選單平滑滾動
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const targetId = link.getAttribute('href');
+                const targetSec = document.querySelector(targetId);
+                toggleMenu(); 
+                setTimeout(() => { targetSec.scrollIntoView({ behavior: 'smooth' }); }, 400);
+            });
+        });
+
+        function scrollToTop() { window.scrollTo({ top: 0, behavior: 'smooth' }); }
+        
+        // 彈出視窗開關
+        const modal = document.getElementById('socialModal');
+        function openModal() { modal.classList.add('active'); }
+        function closeModal() { modal.classList.remove('active'); }
+        modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+
+        // 滾動浮現動畫 (Intersection Observer)
+        const observer = new IntersectionObserver((entries) => { 
+            entries.forEach(entry => { 
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active'); 
+                }
+            }); 
+        }, { threshold: 0.15 });
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+        
+        // 回頂部按鈕顯示邏輯
+        window.addEventListener('scroll', () => { 
+            const btn = document.getElementById('backToTop'); 
+            if (window.pageYOffset > 500) btn.classList.add('show'); else btn.classList.remove('show'); 
+        });
+
+        // 多語系切換設定 (配合留白處理)
+        const translations = {
+            TW: { 
+                label: "TW", 
+                homeSubtitle: "Welcome to my website!",
+                home: "首頁", about: "關於我", fursona: "獸設定介紹", album: "相簿", cta: "與我聯繫", modal: "聯絡方式", albumContent: "照片保留區塊...",
+                name: "尚未填寫", tagline: "Subtitle Here", 
+                infoIntro: "介紹文字保留區塊... 這裡可以放上你的一段自我介紹。",
+                l1: "標題 1", v1: "內容...", l2: "標題 2", v2: "內容...", l3: "標題 3", v3: "內容...", l4: "標題 4", v4: "內容...",
+                fName1: "設定名稱 1", fDes1: "設計：尚未填寫", fMak1: "工作室：尚未填寫", fStory1: "設定介紹文字保留區塊...",
+                fName2: "設定名稱 2", fDes2: "設計：尚未填寫", fMak2: "工作室：尚未填寫", fStory2: "設定介紹文字保留區塊..."
+            },
+            EN: { 
+                label: "EN", 
+                homeSubtitle: "Welcome to my website!",
+                home: "HOME", about: "ABOUT ME", fursona: "FURSONA", album: "ALBUM", cta: "CONTACT ME", modal: "CONTACTS", albumContent: "Album placeholders...",
+                name: "Blank", tagline: "Subtitle Here", 
+                infoIntro: "Intro placeholder... You can put your self-introduction here.",
+                l1: "Title 1", v1: "Content...", l2: "Title 2", v2: "Content...", l3: "Title 3", v3: "Content...", l4: "Title 4", v4: "Content...",
+                fName1: "Fursona 1", fDes1: "Design: Blank", fMak1: "Maker: Blank", fStory1: "Story placeholder...",
+                fName2: "Fursona 2", fDes2: "Design: Blank", fMak2: "Maker: Blank", fStory2: "Story placeholder..."
+            }
+        };
+
+        function changeLang(event, langCode) {
+            event.stopPropagation(); 
+            const t = translations[langCode];
+            
+            document.getElementById('langContainer').classList.remove('active');
+            
+            // 簡單的淡出淡入效果
+            document.body.style.opacity = '0';
+            setTimeout(() => {
+                document.getElementById('currentLangDisplay').innerText = t.label;
+                document.getElementById('homeSubtitle').innerText = t.homeSubtitle;
+                
+                document.getElementById('navHome').innerText = t.home; 
+                document.getElementById('navAbout').innerText = t.about; 
+                document.getElementById('navFursona').innerText = t.fursona; 
+                document.getElementById('navAlbum').innerText = t.album; 
+                
+                document.getElementById('titleAbout').innerText = t.about; 
+                document.getElementById('titleFursona').innerText = t.fursona; 
+                document.getElementById('titleAlbum').innerText = t.album; 
+                
+                document.getElementById('infoName').innerText = t.name; document.getElementById('infoTagline').innerText = t.tagline;
+                document.getElementById('infoIntro').innerHTML = t.infoIntro;
+                
+                document.getElementById('label1').innerText = t.l1; document.getElementById('val1').innerText = t.v1;
+                document.getElementById('label2').innerText = t.l2; document.getElementById('val2').innerText = t.v2;
+                document.getElementById('label3').innerText = t.l3; document.getElementById('val3').innerText = t.v3;
+                document.getElementById('label4').innerText = t.l4; document.getElementById('val4').innerText = t.v4;
+                
+                document.getElementById('fName1').innerText = t.fName1; document.getElementById('fDes1').innerHTML = t.fDes1; document.getElementById('fMak1').innerHTML = t.fMak1; document.getElementById('fStory1').innerHTML = t.fStory1;
+                document.getElementById('fName2').innerText = t.fName2; document.getElementById('fDes2').innerHTML = t.fDes2; document.getElementById('fMak2').innerHTML = t.fMak2; document.getElementById('fStory2').innerHTML = t.fStory2;
+
+                document.getElementById('ctaBtn').innerText = t.cta; document.getElementById('modalTitle').innerText = t.modal;
+                document.getElementById('albumContent').innerText = t.albumContent;
+                
+                document.body.style.opacity = '1';
+                document.body.style.transition = 'opacity 0.4s ease';
+            }, 300);
+        }
+
+        // 點擊語言按鈕展開選單
+        document.getElementById('langContainer').onclick = (e) => { 
+            e.stopPropagation(); 
+            if (document.getElementById('sidebar').classList.contains('active')) {
+                toggleMenu();
+            }
+            e.currentTarget.classList.toggle('active'); 
+        };
+        
+        // 點擊空白處關閉語言選單
+        document.addEventListener('click', () => {
+            document.getElementById('langContainer').classList.remove('active');
+        });
+    </script>
+</body>
+</html>
